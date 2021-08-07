@@ -7,14 +7,23 @@ class HomeScreen extends StatelessWidget {
 
   final caclC = Get.put(CalcController());
 
-  Widget clickButtton(String text, {Color? backColor, Color? textColor}) {
+  Widget clickButtton(String text,
+      {Color? backColor, Color? textColor, double? textSize}) {
     return Material(
       color: backColor ?? Colors.grey[850],
       borderRadius: BorderRadius.circular(30),
       child: InkWell(
         onTap: () {
-          if (text == 'C') {
+          if (text == '.') {
+            caclC.onDot();
+          } else if (text == 'AC') {
             caclC.onClear();
+          } else if (text == 'C') {
+            caclC.onBackspace();
+          } else if (text == '=') {
+            caclC.onResult();
+          } else if (text == '( - )') {
+            caclC.negativeValue(text);
           } else {
             caclC.buttonClick(text);
           }
@@ -27,7 +36,7 @@ class HomeScreen extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                  fontSize: 35,
+                  fontSize: textSize ?? 35,
                   color: textColor ?? Colors.white,
                   fontWeight: FontWeight.w600),
             ),
@@ -39,6 +48,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        'BUILD==============================================================');
     return Scaffold(
       backgroundColor: Colors.black87,
       body: SafeArea(
@@ -61,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                           caclC.result.value,
                           textAlign: TextAlign.end,
                           maxLines: 2,
-                          style: TextStyle(color: Colors.white, fontSize: 45),
+                          style: TextStyle(color: Colors.green, fontSize: 45),
                         ),
                       ),
                     ),
@@ -97,8 +108,8 @@ class HomeScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        clickButtton('C', textColor: Colors.red),
-                        clickButtton('', textColor: Colors.green),
+                        clickButtton('AC', textColor: Colors.red, textSize: 30),
+                        clickButtton('C', textColor: Colors.green),
                         clickButtton('', textColor: Colors.green),
                         clickButtton('/', textColor: Colors.green)
                       ],
@@ -109,7 +120,7 @@ class HomeScreen extends StatelessWidget {
                         clickButtton('7'),
                         clickButtton('8'),
                         clickButtton('9'),
-                        clickButtton('x', textColor: Colors.green)
+                        clickButtton('*', textColor: Colors.green)
                       ],
                     ),
                     Row(
@@ -133,7 +144,7 @@ class HomeScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        clickButtton(''),
+                        clickButtton('( - )', textSize: 30),
                         clickButtton('0'),
                         clickButtton('.'),
                         clickButtton('=', backColor: Colors.green)
