@@ -1,16 +1,24 @@
 import 'package:calculator/controller/calc_controller.dart';
+import 'package:calculator/controller/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   // const HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final caclC = Get.put(CalcController());
+
+  final themeC = Get.find<ThemesController>();
 
   Widget clickButtton(String text,
       {Color? backColor, Color? textColor, double? textSize}) {
     return Material(
-      color: backColor ?? Colors.grey[850],
+      color: backColor ?? Get.theme.buttonColor,
       borderRadius: BorderRadius.circular(30),
       child: InkWell(
         onTap: () {
@@ -37,7 +45,7 @@ class HomeScreen extends StatelessWidget {
               text,
               style: TextStyle(
                   fontSize: textSize ?? 35,
-                  color: textColor ?? Colors.white,
+                  color: textColor ?? Get.theme.accentColor,
                   fontWeight: FontWeight.w600),
             ),
           ),
@@ -51,7 +59,7 @@ class HomeScreen extends StatelessWidget {
     print(
         'BUILD==============================================================');
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -90,7 +98,8 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             caclC.inputNumber.value,
-                            style: TextStyle(color: Colors.white, fontSize: 35),
+                            style: TextStyle(
+                                color: Get.theme.accentColor, fontSize: 35),
                           ),
                         ],
                       ),
@@ -109,9 +118,10 @@ class HomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         clickButtton('AC', textColor: Colors.red, textSize: 30),
-                        clickButtton('C', textColor: Colors.green),
-                        clickButtton('', textColor: Colors.green),
-                        clickButtton('/', textColor: Colors.green)
+                        clickButtton('C', textColor: Get.theme.primaryColor),
+                        clickButtton('( - )',
+                            textColor: Get.theme.primaryColor, textSize: 30),
+                        clickButtton('/', textColor: Get.theme.primaryColor)
                       ],
                     ),
                     Row(
@@ -120,7 +130,7 @@ class HomeScreen extends StatelessWidget {
                         clickButtton('7'),
                         clickButtton('8'),
                         clickButtton('9'),
-                        clickButtton('*', textColor: Colors.green)
+                        clickButtton('*', textColor: Get.theme.primaryColor)
                       ],
                     ),
                     Row(
@@ -129,7 +139,7 @@ class HomeScreen extends StatelessWidget {
                         clickButtton('4'),
                         clickButtton('5'),
                         clickButtton('6'),
-                        clickButtton('-', textColor: Colors.green)
+                        clickButtton('-', textColor: Get.theme.primaryColor)
                       ],
                     ),
                     Row(
@@ -138,13 +148,40 @@ class HomeScreen extends StatelessWidget {
                         clickButtton('1'),
                         clickButtton('2'),
                         clickButtton('3'),
-                        clickButtton('+', textColor: Colors.green)
+                        clickButtton('+', textColor: Get.theme.primaryColor)
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        clickButtton('( - )', textSize: 30),
+                        Material(
+                          color: Get.theme.buttonColor,
+                          borderRadius: BorderRadius.circular(30),
+                          child: InkWell(
+                            onTap: () {
+                              print(Get.isDarkMode);
+                              themeC.changeTheme();
+                              // caclC.inputNumber.value = '';
+                              // caclC.result.value = '';
+                              setState(() {});
+                            },
+                            borderRadius: BorderRadius.circular(30),
+                            child: Container(
+                              width: Get.width * 0.2,
+                              height: Get.width * 0.2,
+                              child: Center(
+                                child: Icon(
+                                  Get.isDarkMode
+                                      ? Icons.dark_mode
+                                      : Icons.light_mode,
+                                  color: Get.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                         clickButtton('0'),
                         clickButtton('.'),
                         clickButtton('=', backColor: Colors.green)
