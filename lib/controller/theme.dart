@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class ThemesController extends GetxController {
+  var isDarkTheme = Get.isDarkMode.obs;
+  var themeApp = ThemeMode.light.obs;
+
   final lightTheme = ThemeData.light().copyWith(
     scaffoldBackgroundColor: Colors.white,
     buttonColor: Colors.grey[300],
     primaryColor: Colors.green[800],
-    textTheme: TextTheme(),
   );
 
   final darkTheme = ThemeData.dark().copyWith(
@@ -16,7 +19,37 @@ class ThemesController extends GetxController {
   );
 
   void changeTheme() {
-    Get.changeThemeMode(Get.isDarkMode ? ThemeMode.light : ThemeMode.dark);
-    update();
+    final box = GetStorage();
+
+    if (isDarkTheme.value) {
+      Get.changeThemeMode(ThemeMode.light);
+      isDarkTheme.value = false;
+      themeApp.value = ThemeMode.light;
+      box.write('darkMode', false);
+    } else {
+      Get.changeThemeMode(ThemeMode.dark);
+      isDarkTheme.value = true;
+      themeApp.value = ThemeMode.dark;
+      box.write('darkMode', true);
+    }
+  }
+
+  void firstInit() {
+    final box = GetStorage();
+    if (box.read('darkMode') != null) {
+      if (box.read('darkMode')) {
+        isDarkTheme.value = true;
+        themeApp.value = ThemeMode.dark;
+      } else {
+        isDarkTheme.value = false;
+        themeApp.value = ThemeMode.light;
+      }
+    }
+  }
+
+  @override
+  void onInit() {
+    firstInit();
+    super.onInit();
   }
 }

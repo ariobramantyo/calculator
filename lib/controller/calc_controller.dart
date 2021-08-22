@@ -6,22 +6,16 @@ class CalcController extends GetxController {
   var result = ''.obs;
   var isLastOperator = true;
   var isLastNumber = false;
-  // var isOperatorExist = false;
+
   var isLastDot = false;
   var isDotExist = false;
   var isLastNegative = false;
-  var isOpenBracket = false;
   var isLastBracket = false;
-
-  var darkMode = false.obs;
 
   void buttonClick(String value) {
     if (value != '*' && value != '/' && value != '-' && value != '+') {
       inputNumber.value += value;
       isLastNumber = true;
-
-      // isLastOperator.value = false;
-      // print('number: ' + value);
     } else {
       if (isLastNumber) {
         inputNumber.value += value;
@@ -30,16 +24,6 @@ class CalcController extends GetxController {
         isDotExist = false;
         isLastNegative = false;
       }
-
-      // sebelum edit
-      // if (isLastNumber && !isOperatorExist) {
-      //   inputNumber.value += value;
-      //   isLastOperator = true;
-      //   isLastNumber = false;
-      //   isOperatorExist = true;
-      //   isDotExist = false;
-      //   isLastNegative = false;
-      // }
     }
   }
 
@@ -49,36 +33,51 @@ class CalcController extends GetxController {
     isLastOperator = true;
     isLastNumber = false;
     isDotExist = false;
-    // isOperatorExist = false;
   }
 
   void onDot() {
     if (inputNumber.value != '') {
       if (isLastNumber && !isDotExist) {
         inputNumber.value += '.';
+        isDotExist = true;
+        isLastDot = true;
+        isLastNumber = false;
       }
-      isDotExist = true;
     }
   }
 
   void onResult() {
     if (inputNumber.value != '' && isLastNumber) {
-      if (isOpenBracket) {
-        inputNumber.value += ')';
+      try {
+        Parser p = Parser();
+        Expression exp = p.parse(inputNumber.value);
+
+        ContextModel cm = ContextModel();
+        double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+        result.value = doubleCheck(eval.toString());
+
+        inputNumber.value = '';
+        isLastOperator = true;
+        isLastNumber = false;
+        isLastDot = false;
+        isDotExist = false;
+      } catch (e) {
+        Get.defaultDialog(
+            title: 'Invalid Input',
+            middleText: 'Try adding the valid number format',
+            textCancel: 'Close',
+            barrierDismissible: false,
+            onCancel: () {
+              result.value = '';
+              inputNumber.value = '';
+              isLastOperator = true;
+              isLastNumber = false;
+              isLastDot = false;
+              isDotExist = false;
+              Get.back();
+            });
       }
-      Parser p = Parser();
-      Expression exp = p.parse(inputNumber.value);
-
-      ContextModel cm = ContextModel();
-      double eval = exp.evaluate(EvaluationType.REAL, cm);
-
-      result.value = doubleCheck(eval.toString());
-      inputNumber.value = '';
-      isLastOperator = true;
-      isLastNumber = false;
-      // isOperatorExist = false;
-      isLastDot = false;
-      isDotExist = false;
     }
   }
 
@@ -97,8 +96,10 @@ class CalcController extends GetxController {
           lastDigit == '-' ||
           lastDigit == '+') {
         isLastOperator = false;
-        // isOperatorExist = false;
         isLastNumber = true;
+      } else if (lastDigit == '.') {
+        isLastDot = false;
+        isDotExist = false;
       }
 
       inputNumber.value =
@@ -107,7 +108,6 @@ class CalcController extends GetxController {
       if (inputNumber.value == '') {
         isLastOperator = true;
         isLastNumber = false;
-        // isOperatorExist = false;
         isLastDot = false;
         isDotExist = false;
       } else {
@@ -118,9 +118,13 @@ class CalcController extends GetxController {
             lastDigit == '+') {
           isLastOperator = true;
           isLastNumber = false;
-          // isOperatorExist = true;
           isDotExist = false;
           isLastNegative = false;
+        } else if (lastDigit == '.') {
+          isLastDot = true;
+          isLastNumber = false;
+        } else {
+          isLastNumber = true;
         }
       }
     }
@@ -132,24 +136,5 @@ class CalcController extends GetxController {
       inputNumber.value += value;
       isLastNegative = true;
     }
-  }
-
-  void onBrackets() {
-    // if (isLastNumber || isLastBracket) {
-    //   inputNumber.value += 'x(';
-    //   isOpenBracket = true;
-    //   return 0;
-    // }
-
-    // if (isOpenBracket) {
-    //   inputNumber.value += ')';
-    //   isOpenBracket = false;
-    //   isLastBracket = true;
-    //   return 0;
-    // }
-
-    // inputNumber.value += '(';
-    // isOpenBracket = true;
-    // return 0;
   }
 }

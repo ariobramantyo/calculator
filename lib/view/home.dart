@@ -3,63 +3,57 @@ import 'package:calculator/controller/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends StatefulWidget {
-  // const HomeScreen({Key? key}) : super(key: key);
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreen extends StatelessWidget {
   final caclC = Get.put(CalcController());
 
   final themeC = Get.find<ThemesController>();
 
   Widget clickButtton(String text,
       {Color? backColor, Color? textColor, double? textSize}) {
-    return Material(
-      color: backColor ?? Get.theme.buttonColor,
-      borderRadius: BorderRadius.circular(30),
-      child: InkWell(
-        onTap: () {
-          if (text == '.') {
-            caclC.onDot();
-          } else if (text == 'AC') {
-            caclC.onClear();
-          } else if (text == 'C') {
-            caclC.onBackspace();
-          } else if (text == '=') {
-            caclC.onResult();
-          } else if (text == '( - )') {
-            caclC.negativeValue(text);
-          } else {
-            caclC.buttonClick(text);
-          }
-        },
-        borderRadius: BorderRadius.circular(30),
-        child: Container(
-          width: Get.width * 0.2,
-          height: Get.width * 0.2,
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                  fontSize: textSize ?? 35,
-                  color: textColor ?? Get.theme.accentColor,
-                  fontWeight: FontWeight.w600),
+    return Obx(() => Material(
+          color: backColor ??
+              (themeC.isDarkTheme.value ? Colors.grey[850] : Colors.grey[300]),
+          borderRadius: BorderRadius.circular(30),
+          child: InkWell(
+            onTap: () {
+              if (text == '.') {
+                caclC.onDot();
+              } else if (text == 'AC') {
+                caclC.onClear();
+              } else if (text == 'C') {
+                caclC.onBackspace();
+              } else if (text == '=') {
+                caclC.onResult();
+              } else if (text == '( - )') {
+                caclC.negativeValue(text);
+              } else {
+                caclC.buttonClick(text);
+              }
+            },
+            borderRadius: BorderRadius.circular(30),
+            child: Container(
+              width: Get.width * 0.2,
+              height: Get.width * 0.2,
+              child: Center(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                      fontSize: textSize ?? 35,
+                      color: textColor ??
+                          (themeC.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black),
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'BUILD==============================================================');
     return Scaffold(
-      backgroundColor: Get.theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -99,7 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             caclC.inputNumber.value,
                             style: TextStyle(
-                                color: Get.theme.accentColor, fontSize: 35),
+                                color: themeC.isDarkTheme.value
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 35),
                           ),
                         ],
                       ),
@@ -154,29 +151,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Material(
-                          color: Get.theme.buttonColor,
-                          borderRadius: BorderRadius.circular(30),
-                          child: InkWell(
-                            onTap: () {
-                              print(Get.isDarkMode);
-                              themeC.changeTheme();
-                              // caclC.inputNumber.value = '';
-                              // caclC.result.value = '';
-                              setState(() {});
-                            },
+                        Obx(
+                          () => Material(
+                            color: themeC.isDarkTheme.value
+                                ? Colors.grey[850]
+                                : Colors.grey[300],
                             borderRadius: BorderRadius.circular(30),
-                            child: Container(
-                              width: Get.width * 0.2,
-                              height: Get.width * 0.2,
-                              child: Center(
-                                child: Icon(
-                                  Get.isDarkMode
-                                      ? Icons.dark_mode
-                                      : Icons.light_mode,
-                                  color: Get.isDarkMode
-                                      ? Colors.white
-                                      : Colors.black,
+                            child: InkWell(
+                              onTap: () {
+                                themeC.changeTheme();
+                              },
+                              borderRadius: BorderRadius.circular(30),
+                              child: Container(
+                                width: Get.width * 0.2,
+                                height: Get.width * 0.2,
+                                child: Center(
+                                  child: Icon(
+                                    themeC.isDarkTheme.value
+                                        ? Icons.dark_mode
+                                        : Icons.light_mode,
+                                    color: themeC.isDarkTheme.value
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                                 ),
                               ),
                             ),
